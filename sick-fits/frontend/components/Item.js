@@ -25,21 +25,21 @@ class Item extends Component {
                     }}>
                         <a>{item.title}</a>
                     </Link>
-                    <PriceTag>
-                        {formatMoney(item.price)}
-                    </PriceTag>
-                    <p>{item.description}</p>
-                    <div className="buttonList">
-                        <Link href={{
-                            pathname: 'update',
-                            query: { id: item.id }
-                        }}>
-                            <a>Edit</a>
-                        </Link>
-                        <button>Add to cart</button>
-                        <button>Delete</button>
-                    </div>
                 </Title>
+                <PriceTag>
+                    {formatMoney(item.price)}
+                </PriceTag>
+                <p>{item.description}</p>
+                <div className="buttonList">
+                    <Link href={{
+                        pathname: 'update',
+                        query: { id: item.id }
+                    }}>
+                        <a>Edit</a>
+                    </Link>
+                    <button>Add to cart</button>
+                    <button>Delete</button>
+                </div>
             </ItemStyles>        
         );
     }
