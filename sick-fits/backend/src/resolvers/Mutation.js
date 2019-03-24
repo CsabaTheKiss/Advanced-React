@@ -23,6 +23,15 @@ const Mutations = {
             }
         }, info
         );
+    },
+    async deleteItem(parent, args, context, info) { // info: query response from FE action
+        const where = { id: args.id };
+        // 1. find the item
+        const item = await context.db.query.item({where}, `{ id title }`)
+        // 2. check if they own that item / have permissions
+        // TODO
+        // 3. delete it!
+        return context.db.mutation.deleteItem({ where }, info);
     }
 };
 
