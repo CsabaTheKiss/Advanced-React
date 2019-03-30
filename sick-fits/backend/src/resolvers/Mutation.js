@@ -9,6 +9,29 @@ const Mutations = {
         }, info);
 
         return item;
+    },
+    updateItem(parent, args, context, info) {
+        // first take a copy of the updates
+        const updates = { ...args };
+        // remove the ID from the updates
+        delete updates.id;
+        // run the update method
+        return context.db.mutation.updateItem({
+            data: updates,
+            where: {
+                id: args.id
+            }
+        }, info
+        );
+    },
+    async deleteItem(parent, args, context, info) { // info: query response from FE action
+        const where = { id: args.id };
+        // 1. find the item
+        const item = await context.db.query.item({where}, `{ id title }`)
+        // 2. check if they own that item / have permissions
+        // TODO
+        // 3. delete it!
+        return context.db.mutation.deleteItem({ where }, info);
     }
 };
 
