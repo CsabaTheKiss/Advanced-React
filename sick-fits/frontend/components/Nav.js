@@ -5,6 +5,7 @@ import {
 
 import NavStyles from './styles/NavStyles';
 import User from './User';
+import Signout from './Signout';
 
 const Nav = () => (
 
@@ -26,11 +27,12 @@ const Nav = () => (
                 <Link href="/me">
                   <a>Account</a>
                 </Link>
+                <Signout />
               </Fragment>
             )}
             {!me && (
               <Link href="/signup">
-                <a>Signin</a>
+                <a>Sign in</a>
               </Link>
             )}
           </NavStyles>

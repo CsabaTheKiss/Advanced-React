@@ -80,6 +80,12 @@ const Mutations = {
         })
         // 5. Return the user
         return user;
+    },
+    signout (parent, args, context, info) {
+        context.response.clearCookie('token');
+        return {
+            message: 'Goodbye!'
+        }
     }
 };
 
