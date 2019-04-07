@@ -14,10 +14,18 @@ const {
 
 const Mutations = {
     async createItem (parent, args, context, info) {
-        // TODO: check if they are logged in
+        if (!context.request.userId) {
+            throw new Error('You must be logged in to do that!');
+        }
 
         const item = await context.db.mutation.createItem({
             data: {
+                // This is how to create relationship between the item and the Usder
+                user: {
+                    connect: {
+                        id: context.request.userId
+                    }
+                },
                 ...args
             }
         }, info);
