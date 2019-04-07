@@ -7,6 +7,11 @@ const {
     promisify
 } = require('util');
 
+const {
+    transport,
+    makeANiceEmail
+} = require('../mail');
+
 const Mutations = {
     async createItem (parent, args, context, info) {
         // TODO: check if they are logged in
@@ -111,10 +116,22 @@ const Mutations = {
             }
         });
         console.log(response);
+        // 3. Email them that reset token
+        const mailResponse = await transport.sendMail({
+            from: 'coc@coc.com',
+            to: user.email,
+            subject: 'Zour Password Reset',
+            html: makeANiceEmail(`Your Password Reset Token is here!
+                \n\n
+                <a href="${process.env.FRONTEND_URL}/reset?resetToken=${resetToken}">
+                    Click here to reset!
+                </a>`
+            )
+        });
+        // 4. return the message
         return {
             message: 'Thanks!'
         }
-        // 3. Email them that reset token
     },
     async resetPassword (parent, args, context, info) {
         // 1. check if passwords match
