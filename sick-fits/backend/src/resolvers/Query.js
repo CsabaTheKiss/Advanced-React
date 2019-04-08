@@ -22,7 +22,7 @@ const Query = {
             throw new Error('You must be signed in!');
         }
         // 1. Check if user has the permissions to query all users
-        hasPermission(context.request.user, ['ADMIN', 'PERMISSIONUPDATE']);
+        hasPermission(context.request.user, ['ADMIN', 'PERMISSION_UPDATE']);
         // 2. if they do, query all users
         return context.db.query.users({}, info);
     }

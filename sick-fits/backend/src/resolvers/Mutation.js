@@ -12,6 +12,10 @@ const {
     makeANiceEmail
 } = require('../mail');
 
+const {
+    hasPermission
+} = require('../utils');
+
 const Mutations = {
     async createItem (parent, args, context, info) {
         if (!context.request.userId) {
@@ -128,7 +132,7 @@ const Mutations = {
         const mailResponse = await transport.sendMail({
             from: 'coc@coc.com',
             to: user.email,
-            subject: 'Zour Password Reset',
+            subject: 'Your Password Reset',
             html: makeANiceEmail(`Your Password Reset Token is here!
                 \n\n
                 <a href="${process.env.FRONTEND_URL}/reset?resetToken=${resetToken}">
@@ -178,6 +182,31 @@ const Mutations = {
         // 8. return the new user
         return updatedUser;
         // 9. HHEWEHEWW have a beer :)
+    },
+    async updatePermissions (parent, args, context, info) {
+        // 1. Check if they are logged in
+        if (!context.request.userId) {
+            throw new Error('You must be logged in to do that!');
+        }
+        // 2. Query the current user
+        const currentUser = await context.db.query.user({
+            where: {
+                id: context.request.userId
+            }
+        }, info);
+        // 3. Check if they have permissions to do this
+        hasPermission(currentUser, ['ADMIN', 'PERMISSION_UPDATE']);
+        // 4. UpdAte the permissions
+        return context.db.mutation.updateUser({
+            data: {
+                permissions: {
+                    set: args.permissions
+                },
+            },
+            where: {
+                id: args.userId
+            }
+        }, info);
     }
 };
 
