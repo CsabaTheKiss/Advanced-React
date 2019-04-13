@@ -6,7 +6,6 @@ import {
 import {
   Mutation
 } from 'react-apollo';
-import gql from 'graphql-tag';
 
 import NavStyles from './styles/NavStyles';
 import User from './User';
