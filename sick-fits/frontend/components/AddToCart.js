@@ -1,6 +1,9 @@
 import React from 'react';
 import { MdAddShoppingCart } from 'react-icons/md';
 import {
+    CURRENT_USER_QUERY
+} from './User';
+import {
     Mutation
   } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -25,10 +28,14 @@ class AddToCart extends React.Component {
                 variables={{
                     id
                 }}
+                refetchQueries={[{ query: CURRENT_USER_QUERY }]}
             >
-                {(addToCart) => (
-                    <button onClick={addToCart}>
-                        Add to Cart <MdAddShoppingCart />
+                {(addToCart, { loading }) => (
+                    <button
+                        onClick={addToCart}
+                        disabled={loading}
+                    >
+                        Add{loading && 'ing'} to Cart <MdAddShoppingCart />
                     </button>
                 )}
             </Mutation>
