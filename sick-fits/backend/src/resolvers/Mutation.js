@@ -53,9 +53,14 @@ const Mutations = {
     async deleteItem(parent, args, context, info) { // info: query response from FE action
         const where = { id: args.id };
         // 1. find the item
-        const item = await context.db.query.item({where}, `{ id title }`)
+        const item = await context.db.query.item({where}, `{ id title user { id } }`)
         // 2. check if they own that item / have permissions
-        // TODO
+        const ownsItem = item.user.id === context.request.userId;
+        const hasPermissions = context.request.user.permissions.some(permission => [ 'ADMIN', 'ITEMDELETE' ].includes(permission));
+        
+        if ( !ownsItem && !hasPermissions) {
+            throw new Error('You do not have the permissions for this operation.');
+        }
         // 3. delete it!
         return context.db.mutation.deleteItem({ where }, info);
     },
