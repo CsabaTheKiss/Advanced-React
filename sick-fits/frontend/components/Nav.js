@@ -10,6 +10,7 @@ import {
 import NavStyles from './styles/NavStyles';
 import User from './User';
 import Signout from './Signout';
+import CartCount from './CartCount';
 
 import {
   TOGGLE_CART_MUTATION
@@ -39,6 +40,7 @@ const Nav = () => (
                   {(toggleCart) => 
                     <button onClick={toggleCart}>
                       My Cart
+                      <CartCount count={me.cart.reduce((tally, cartItem) => tally + cartItem.quantity, 0)} />
                     </button>
                   }
                 </Mutation>
