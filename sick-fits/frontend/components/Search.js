@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Downshift from 'downshift';
+import Downshift, { resetIdCounter } from 'downshift';
 import Router from 'next/router';
 import {
     ApolloConsumer
@@ -27,6 +27,15 @@ const SEARCH_ITEM_QUERY = gql`
     }
 `;
 
+function routeToItem (item) {
+    Router.push({
+        pathname: '/item',
+        query: {
+            id: item.id
+        }
+    });
+}
+
 class AutoComplete extends Component {
     state = {
         items: [],
@@ -51,28 +60,54 @@ class AutoComplete extends Component {
     }, 350);
 
     render() {
+        resetIdCounter(); // to prevent server and client side rendered page inconsistency on generated ids
+
         return (
             <SearchStyles>
-                <div>
-                    <ApolloConsumer>
-                        {(client) => (
-                            <input type="search" onChange={
-                                (event) => {
-                                    event.persist();
-                                    this.onSearchChange(event, client)
-                                }
-                            }/>
-                        )}
-                    </ApolloConsumer>
-                    <DropDown>
-                        {this.state.items.map(item => (
-                            <DropDownItem key={item.id}>
-                                <img width="50" src={item.image} alt={item.title} />
-                                {item.title}
-                            </DropDownItem>
-                        ))}
-                    </DropDown>
-                </div>
+                <Downshift
+                    itemToString={item => (item === null ? '' : item.title)}
+                    onChange={routeToItem}
+                >
+                    {({ getInputProps, getItemProps, isOpen, inputValue, highlightedIndex }) => (
+                        <div>
+                            <ApolloConsumer>
+                                {(client) => (
+                                    <input
+                                        {...getInputProps({
+                                            type: 'search',
+                                            placeholder: 'Search for an item',
+                                            id: 'search',
+                                            className: this.state.loading ? 'loading' : '',
+                                            onChange: (event) => {
+                                                event.persist();
+                                                this.onSearchChange(event, client)
+                                            }
+                                        })}
+                                    />
+                                )}
+                            </ApolloConsumer>
+                            { isOpen && (
+                                <DropDown>
+                                    {this.state.items.map((item, index) => (
+                                        <DropDownItem
+                                            key={item.id}
+                                            {...getItemProps({item})}
+                                            highlighted={ index === highlightedIndex }
+                                        >
+                                            <img width="50" src={item.image} alt={item.title} />
+                                            {item.title}
+                                        </DropDownItem>
+                                    ))}
+                                    {!this.state.items.length && !this.state.loading && (
+                                        <DropDownItem>
+                                            Nothing found for {inputValue}
+                                        </DropDownItem>
+                                    )}
+                                </DropDown>
+                            )}
+                        </div>
+                    )}
+                </Downshift>
             </SearchStyles>
         );
     }
